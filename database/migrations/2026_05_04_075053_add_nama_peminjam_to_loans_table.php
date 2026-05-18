@@ -10,12 +10,18 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('loans', function (Blueprint $table) {
-        // Tambahkan kolom nama_peminjam (bisa dikosongkan untuk data lama agar tidak error)
-        $table->string('nama_peminjam')->nullable()->after('item_id');
-    });
-}
+    {
+        Schema::table('loans', function (Blueprint $table) {
+
+            // Cegah duplicate column saat deploy
+            if (!Schema::hasColumn('loans', 'nama_peminjam')) {
+
+                $table->string('nama_peminjam');
+
+            }
+
+        });
+    }
 
     /**
      * Reverse the migrations.
@@ -23,7 +29,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('loans', function (Blueprint $table) {
-            //
+
+            if (Schema::hasColumn('loans', 'nama_peminjam')) {
+
+                $table->dropColumn('nama_peminjam');
+
+            }
+
         });
     }
 };
