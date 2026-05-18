@@ -9,13 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   // database/migrations/xxxx_add_role_to_users_table.php
-public function up()
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('role')->default('user');
-    });
-}
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+
+            // Cek apakah kolom role belum ada
+            // supaya tidak duplicate saat deploy/redeploy
+            if (!Schema::hasColumn('users', 'role')) {
+
+                $table->string('role')
+                    ->default('user');
+
+            }
+
+        });
+    }
 
     /**
      * Reverse the migrations.
@@ -23,7 +31,14 @@ public function up()
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+
+            // Hapus kolom role jika ada
+            if (Schema::hasColumn('users', 'role')) {
+
+                $table->dropColumn('role');
+
+            }
+
         });
     }
 };
